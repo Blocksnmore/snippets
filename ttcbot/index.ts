@@ -1,4 +1,4 @@
-// THIS USES DENO & HARMONY
+// THIS USES DENO AND HARMONY
 import {
 	Client,
 	slash,
@@ -15,7 +15,6 @@ import { Token } from './config.ts';
 import { ttc, ttctemplate } from './games.ts';
 import { ttcbuttons, winCheck, tieCheck } from './buttons.ts';
 
-const guilds: string[] = ['725103887584985088', '688115766867918950'];
 const ttcgames = new Map<string, ttc>();
 const rewrites = new Map<string, string>();
 
@@ -23,25 +22,33 @@ class bot extends Client {
 	@event()
 	ready(): void {
 		console.log('Started bot!');
-		guilds.forEach((g) => {
-			this.slash.commands.create(
+		this.slash.commands.create({
+			name: 'ttc',
+			description: 'Play tic tac toe',
+			options: [
 				{
-					name: 'ttc',
-					description: 'Play tic tac toe',
-					options: [
-						{
-							name: 'user',
-							description: 'User you want to play with',
-							type: SlashCommandOptionType.USER,
-							required: true,
-						},
-					],
+					name: 'user',
+					description: 'User you want to play with',
+					type: SlashCommandOptionType.USER,
+					required: true,
 				},
-				g
-			);
+			],
+		});
+		this.slash.commands.create({
+			name: 'tictactoe',
+			description: 'Play tic tac toe',
+			options: [
+				{
+					name: 'user',
+					description: 'User you want to play with',
+					type: SlashCommandOptionType.USER,
+					required: true,
+				},
+			],
 		});
 	}
 	@slash('ttc')
+	@slash('tictactoe')
 	async tictactoe(i: Interaction): Promise<void> {
 		if (ttcgames.has(i.user.id)) {
 			i.reply('You already have a game open!');
