@@ -92,7 +92,7 @@ class bot extends Client {
 				embeds: [
 					new Embed()
 						.setTitle('TicTacToe')
-						.setDescription('Turn: ' + msg.author.mention),
+						.setDescription('Turn: <@!' + (ttcgames.get(i.user.id) as ttc).x +">"),
 				],
 				components: ttcbuttons(ttcgames.get(i.user.id) as ttc),
 			});
