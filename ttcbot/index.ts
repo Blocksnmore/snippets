@@ -9,6 +9,7 @@ import {
 	isMessageComponentInteraction,
 	InteractionResponseFlags,
 	InteractionResponseType,
+	Embed,
 } from 'https://deno.land/x/harmony/mod.ts';
 import { Token } from './config.ts';
 import { ttc, ttctemplate } from './games.ts';
@@ -52,11 +53,18 @@ class bot extends Client {
 			await i.reply("You can't play with yourself!");
 			return;
 		}
-		const reply = await i.reply(
-			'Reply with `y` to accept this match <@!' +
-				option.value +
-				'> [This will time out in 30 seconds]'
-		);
+		const reply = await i.respond({
+			content: '<@!' + option.value + '>',
+			embeds: [
+				new Embed()
+					.setTitle(
+						i.user.username +
+							' is challenging you to a game of tictactoe!'
+					)
+					.setDescription('To accept the request say `y`')
+					.setFooter('This will time out in 30 seconds!'),
+			],
+		});
 		const message = await i.client.waitFor(
 			'messageCreate',
 			(m) =>
@@ -74,7 +82,11 @@ class bot extends Client {
 			ttcgames.set(i.user.id, ttctemplate(msg.author.id, i.user.id));
 			rewrites.set(msg.author.id, i.user.id);
 			reply.editResponse({
-				content: 'Turn: ' + msg.author.mention,
+				embeds: [
+					new Embed()
+						.setTitle('TicTacToe')
+						.setDescription('Turn: ' + msg.author.mention),
+				],
 				components: ttcbuttons(ttcgames.get(i.user.id) as ttc),
 			});
 			return;
@@ -93,10 +105,11 @@ class bot extends Client {
 					? (rewrites.get(i.user.id) as string)
 					: i.user.id;
 				const game = ttcgames.get(saveid) as ttc;
-				if(game == null){
+				if (game == null) {
 					await i.reply({
 						flags: InteractionResponseFlags.EPHEMERAL,
-						content: 'An error occured while trying to find that game!',
+						content:
+							'An error occured while trying to find that game!',
 					});
 					return;
 				}
@@ -118,7 +131,9 @@ class bot extends Client {
 
 				if (await winCheck(game)) {
 					i.message.edit({
-						content: i.user.mention + ' won!',
+						embed: new Embed()
+							.setTitle('TicTacToe')
+							.setDescription(i.user.mention + ' won!'),
 						components: ttcbuttons(ttcgames.get(saveid) as ttc),
 					});
 					i.respond({
@@ -130,7 +145,9 @@ class bot extends Client {
 					return;
 				} else if (await tieCheck(game)) {
 					i.message.edit({
-						content: "It's a tie!",
+						embed: new Embed()
+							.setTitle('TicTacToe')
+							.setDescription("It's a tie!"),
 						components: ttcbuttons(ttcgames.get(saveid) as ttc),
 					});
 					i.respond({
@@ -142,7 +159,9 @@ class bot extends Client {
 					return;
 				} else {
 					i.message.edit({
-						content: 'Turn: <@!' + next + '>',
+						embed: new Embed()
+							.setTitle('TicTacToe')
+							.setDescription('Turn: <@!' + next + '>'),
 						components: ttcbuttons(ttcgames.get(saveid) as ttc),
 					});
 					i.respond({
