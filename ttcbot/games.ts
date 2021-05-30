@@ -13,7 +13,8 @@ export interface ttc {
 	o: string;
 }
 
-export function ttctemplate(first: string, second: string): ttc {
+export function ttctemplate(user1: string, user2: string): ttc {
+	const whichuserfirst = Math.random() >= 0.5 ? true : false
 	return {
 		'11': null,
 		'12': null,
@@ -24,8 +25,8 @@ export function ttctemplate(first: string, second: string): ttc {
 		'31': null,
 		'32': null,
 		'33': null,
-		x: first,
-		o: second,
+		x: whichuserfirst ? user1 : user2,
+		o: whichuserfirst ? user2 : user1,
 		turn: 'x',
 	};
 }
